@@ -60,14 +60,14 @@ if (!module.parent) {
   process.stdin.resume();
 
   process.stdin.on('data', function (buf) {
-    console.error(buf.length);
+    //console.error(buf.length);
     rawInput += buf.toString();
   });
   process.stdin.on('end', function () {
     //console.error(JSON.stringify(inputData));
     var inputData = JSON.parse(rawInput);
     //console.error(inputData);
-    console.error("About to convert",inputData.length,"records from stdin to CSV");
+    //console.error("About to convert",inputData.length,"records from stdin to CSV");
     doCSV(inputData);
     return;
   });
