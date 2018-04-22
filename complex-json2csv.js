@@ -21,22 +21,45 @@ if (!module.parent) {
     usage( );
     process.exit(0)
   }
-  if (!inputFileName) {
-    usage( )
-    process.exit(1);
+  if (inputFileName) {
+    var fs = require('fs');
+    var cwd = process.cwd()
+    try {
+      var inputData = JSON.parse(fs.readFileSync(inputFileName, 'utf8'));
+    } catch (e) {
+      return console.error("Could not parse input file: ", e);
+    }
+    //console.error(JSON.stringify(inputData));
+    //console.error(inputData);
+    //console.error("About to convert",inputData.length,"records from file to CSV");
+    doCSV(inputData);
+    return;
   }
 
-  var fs = require('fs');
-  var cwd = process.cwd()
-  try {
-    var inputData = JSON.parse(fs.readFileSync(inputFileName, 'utf8'));
-  } catch (e) {
-    return console.error("Could not parse input file: ", e);
-  }
+  console.error("No input file: using stdin");
+  var rawInput = "";
+  const readline = require('readline');
 
-  //console.error(JSON.stringify(inputData));
-  //console.error("About to convert",inputData.length,"records to CSV");
-  doCSV(inputData);
+  var rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+    terminal: false
+  });
+
+  process.stdin.resume();
+
+  process.stdin.on('data', function (buf) {
+    //console.error(buf.length);
+    rawInput += buf.toString();
+  });
+  process.stdin.on('end', function () {
+    //console.error(JSON.stringify(inputData));
+    var inputData = JSON.parse(rawInput);
+    //console.error(inputData);
+    //console.error("About to convert",inputData.length,"records from stdin to CSV");
+    doCSV(inputData);
+    return;
+  });
 } 
 
 function doJSON() {
